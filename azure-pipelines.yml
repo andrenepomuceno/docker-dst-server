@@ -11,12 +11,12 @@ resources:
 variables:
 
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: '9e598a10-058f-4d40-8790-40be173fcfee'
-  imageRepository: 'dockerdstserver'
-  containerRegistry: 'andrelsn.azurecr.io'
+  dockerRegistryServiceConnection: '8aefd436-0831-4fd7-b988-d97244c62070'
+  imageRepository: 'dontstarve'
+  containerRegistry: 'dontstarve.azurecr.io'
   dockerfilePath: '**/Dockerfile'
   tag: '$(Build.BuildId)'
-  imagePullSecret: 'andrelsn0cee-auth'
+  imagePullSecret: 'dontstarve16503935-auth'
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
@@ -31,6 +31,14 @@ stages:
     pool:
       vmImage: $(vmImageName)
     steps:
+    - task: DownloadSecureFile@1
+      name: clusterToken
+      inputs:
+        secureFile: 'cluster_token.txt'
+
+    - script: |
+        cp $(clusterToken) dst_default_config\DoNotStarveTogether\Cluster_1
+
     - task: Docker@2
       displayName: Build and push an image to container registry
       inputs:
@@ -53,7 +61,7 @@ stages:
     displayName: Deploy
     pool:
       vmImage: $(vmImageName)
-    environment: 'andrenepomucenodockerdstserver.dontstarve'
+    environment: 'andrenepomucenodockerdstserver-1875.default'
     strategy:
       runOnce:
         deploy:

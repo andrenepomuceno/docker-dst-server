@@ -1,19 +1,19 @@
 apiVersion : apps/v1
 kind: Deployment
 metadata:
-  name: dockerdstserver 
+  name: dontstarve 
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: dockerdstserver
+      app: dontstarve
   template:
     metadata:
       labels:
-        app: dockerdstserver 
+        app: dontstarve 
     spec:
       containers:
-        - name: dockerdstserver 
-          image: andrelsn.azurecr.io/dockerdstserver
+        - name: dontstarve 
+          image: dontstarve.azurecr.io/dontstarve
           ports:
-          - containerPort: 80
+          - containerPort: 10999-11000/udp 12346-12347/udp

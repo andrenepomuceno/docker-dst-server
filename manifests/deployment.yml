@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: dockerdstserver 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dockerdstserver
+  template:
+    metadata:
+      labels:
+        app: dockerdstserver 
+    spec:
+      containers:
+        - name: dockerdstserver 
+          image: andrelsn.azurecr.io/dockerdstserver
+          ports:
+          - containerPort: 80

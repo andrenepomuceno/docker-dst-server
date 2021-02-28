@@ -9,22 +9,19 @@ resources:
 - repo: self
 
 variables:
-
-  # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: '8aefd436-0831-4fd7-b988-d97244c62070'
   imageRepository: 'dontstarve'
   containerRegistry: 'dontstarve.azurecr.io'
   dockerfilePath: '**/Dockerfile'
   tag: '$(Build.BuildId)'
   imagePullSecret: 'dontstarve16503935-auth'
-
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
-
 
 stages:
 - stage: Build
   displayName: Build stage
+  variables:
+  - group: variables
   jobs:
   - job: Build
     displayName: Build
@@ -36,18 +33,18 @@ stages:
       inputs:
         secureFile: 'cluster_token.txt'
 
-    - script: |
-        cp $(clusterToken) dst_default_config\DoNotStarveTogether\Cluster_1
+    - bash: |
+        sed -i "s/cluster_password =/cluster_password = $(serverPassword)/g" $(Build.Repository.LocalPath)/dst_default_config/DoNotStarveTogether/Cluster_1/cluster.ini
+        cp -v $(clusterToken.secureFilePath) $(Build.Repository.LocalPath)/dst_default_config/DoNotStarveTogether/Cluster_1/cluster_token.txt
 
     - task: Docker@2
       displayName: Build and push an image to container registry
       inputs:
-        command: buildAndPush
-        repository: $(imageRepository)
-        dockerfile: $(dockerfilePath)
-        containerRegistry: $(dockerRegistryServiceConnection)
-        tags: |
-          $(tag)
+        containerRegistry: 'ACR'
+        repository: '$(imageRepository)'
+        command: 'buildAndPush'
+        Dockerfile: '**/Dockerfile'
+        tags: '$(tag)'
 
     - upload: manifests
       artifact: manifests
@@ -69,19 +66,19 @@ stages:
           - task: KubernetesManifest@0
             displayName: Create imagePullSecret
             inputs:
-              action: createSecret
-              secretName: $(imagePullSecret)
-              dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
+              action: 'createSecret'
+              kubernetesServiceConnection: 'AKS'
+              secretType: 'dockerRegistry'
+              secretName: '$(imagePullSecret)'
+              dockerRegistryEndpoint: 'ACR'
 
           - task: KubernetesManifest@0
             displayName: Deploy to Kubernetes cluster
             inputs:
-              action: deploy
+              action: 'deploy'
+              kubernetesServiceConnection: 'AKS'
               manifests: |
                 $(Pipeline.Workspace)/manifests/deployment.yml
                 $(Pipeline.Workspace)/manifests/service.yml
-              imagePullSecrets: |
-                $(imagePullSecret)
-              containers: |
-                $(containerRegistry)/$(imageRepository):$(tag)
-
+              containers: '$(containerRegistry)/$(imageRepository):$(tag)'
+              imagePullSecrets: '$(imagePullSecret)'

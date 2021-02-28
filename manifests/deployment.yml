@@ -16,4 +16,15 @@ spec:
         - name: dontstarve 
           image: dontstarve.azurecr.io/dontstarve
           ports:
-          - containerPort: 10999-11000/udp 12346-12347/udp
+          - containerPort: 10999
+            name: port0
+            protocol: udp
+          - containerPort: 11000
+            name: port1
+            protocol: udp
+          - containerPort: 12346
+            name: port2
+            protocol: udp
+          - containerPort: 12347
+            name: port3
+            protocol: udp

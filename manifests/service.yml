@@ -5,6 +5,17 @@ metadata:
 spec:
     type: LoadBalancer
     ports:
-    - port: 10999-11000/udp 12346-12347/udp 
+    - port: 10999
+      name: port0
+      protocol: udp
+    - port: 11000
+      name: port1
+      protocol: udp
+    - port: 12346
+      name: port2
+      protocol: udp
+    - port: 12347
+      name: port3
+      protocol: udp
     selector:
         app: dontstarve

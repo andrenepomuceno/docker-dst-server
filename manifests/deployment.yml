@@ -18,13 +18,13 @@ spec:
           ports:
           - containerPort: 10999
             name: port0
-            protocol: udp
+            protocol: UDP
           - containerPort: 11000
             name: port1
-            protocol: udp
+            protocol: UDP
           - containerPort: 12346
             name: port2
-            protocol: udp
+            protocol: UDP
           - containerPort: 12347
             name: port3
-            protocol: udp
+            protocol: UDP

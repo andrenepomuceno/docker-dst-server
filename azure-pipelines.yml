@@ -39,7 +39,8 @@ stages:
         secureFile: 'cluster_token.txt'
 
     - bash: |
-        sed -i "s/cluster_password =/cluster_password = $(serverPassword)/g" $(Build.Repository.LocalPath)/dst_default_config/DoNotStarveTogether/Cluster_1/cluster.ini
+        patern="s/cluster_password =/cluster_password = $(serverPassword)/"
+        sed -i "$patern" $(Build.Repository.LocalPath)/dst_default_config/DoNotStarveTogether/Cluster_1/cluster.ini
         cp -v $(clusterToken.secureFilePath) $(Build.Repository.LocalPath)/dst_default_config/DoNotStarveTogether/Cluster_1/cluster_token.txt
 
     - task: Docker@2
@@ -87,4 +88,3 @@ stages:
                 $(imagePullSecret)
               containers: |
                 $(containerRegistry)/$(imageRepository):$(tag)
-
